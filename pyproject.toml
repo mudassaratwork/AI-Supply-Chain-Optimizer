@@ -1,0 +1,108 @@
+# =============================================================================
+# AI Supply Chain Optimizer — tooling configuration
+#
+# This file intentionally contains NO [build-system] / [project] tables.
+# The repo is not (yet) a distributable package; this file only configures
+# ruff, black, mypy, and pytest so the whole codebase shares one source of
+# truth for lint / format / type-check / test settings.
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Ruff — lint + import sorting
+# -----------------------------------------------------------------------------
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+extend-exclude = [
+    "data",
+    "models/artifacts",
+    ".venv",
+]
+
+[tool.ruff.lint]
+# A pragmatic starter set. Add rules as the codebase matures; don't enable
+# everything on day one or PR 0.1 spends its time silencing noise.
+select = [
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes
+    "I",    # isort
+    "B",    # flake8-bugbear
+    "UP",   # pyupgrade
+    "SIM",  # flake8-simplify
+    "RUF",  # ruff-specific
+]
+ignore = [
+    "E501",  # line length — handled by the formatter
+    "B008",  # function-call-in-default-argument — FastAPI uses this idiom
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["B011"]  # asserts are fine in tests
+"__init__.py" = ["F401"]  # re-exports are fine in package roots
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "lf"
+
+# -----------------------------------------------------------------------------
+# Black — formatter (kept aligned with ruff so they don't fight)
+# -----------------------------------------------------------------------------
+[tool.black]
+line-length = 100
+target-version = ["py311"]
+
+# -----------------------------------------------------------------------------
+# Mypy — static type checking
+# -----------------------------------------------------------------------------
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+no_implicit_optional = true
+check_untyped_defs = true
+ignore_missing_imports = false
+exclude = [
+    "^data/",
+    "^models/artifacts/",
+    "^\\.venv/",
+]
+
+# Third-party libs without first-class type stubs. Suppressing here is cleaner
+# than scattering `# type: ignore` across the codebase.
+[[tool.mypy.overrides]]
+module = [
+    "prophet.*",
+    "statsmodels.*",
+    "xgboost.*",
+    "sklearn.*",
+    "joblib.*",
+    "mangum.*",
+    "plotly.*",
+    "streamlit.*",
+    "cmdstanpy.*",
+    "holidays.*",
+]
+ignore_missing_imports = true
+
+# -----------------------------------------------------------------------------
+# Pytest
+# -----------------------------------------------------------------------------
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+asyncio_mode = "auto"
+addopts = [
+    "-ra",
+    "--strict-markers",
+    "--strict-config",
+]
+filterwarnings = [
+    "error",
+    # Prophet / cmdstanpy emit deprecation noise that is out of our control.
+    "ignore::DeprecationWarning:prophet.*",
+    "ignore::DeprecationWarning:cmdstanpy.*",
+]
