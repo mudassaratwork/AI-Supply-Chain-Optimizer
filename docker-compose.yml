@@ -1,0 +1,33 @@
+# =============================================================================
+# AI Supply Chain Optimizer — local dev stack
+#
+# Phase 0.2: Postgres only. The API / dashboard services land in later phases.
+# Credentials default to scm/scm/scm so a fresh clone works without an .env;
+# override via .env (see .env.example) when you want non-default values.
+# =============================================================================
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: scm-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-scm}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-scm}
+      POSTGRES_DB: ${POSTGRES_DB:-scm}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -U "${POSTGRES_USER:-scm}" -d "${POSTGRES_DB:-scm}"
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+volumes:
+  postgres_data:
+    name: scm_postgres_data
