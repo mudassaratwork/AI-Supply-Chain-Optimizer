@@ -106,3 +106,18 @@ filterwarnings = [
     "ignore::DeprecationWarning:prophet.*",
     "ignore::DeprecationWarning:cmdstanpy.*",
 ]
+
+# -----------------------------------------------------------------------------
+# Coverage.py
+# -----------------------------------------------------------------------------
+[tool.coverage.run]
+branch = true
+source = ["api", "etl", "models", "dashboard"]
+# Suppress "no-data-collected" — harmless while the codebase is being
+# scaffolded and the test suite doesn't yet exercise the source packages.
+# Remove this once real tests land.
+disable_warnings = ["no-data-collected", "module-not-imported", "module-not-measured"]
+
+[tool.coverage.report]
+skip_empty = true
+show_missing = true
