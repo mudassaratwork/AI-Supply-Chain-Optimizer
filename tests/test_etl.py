@@ -10,7 +10,6 @@ from typer.testing import CliRunner
 
 from etl.generate_synthetic import SALES_COLUMNS, app, generate_sales
 
-
 # ---------------------------------------------------------------------------
 # generate_sales (pure function)
 # ---------------------------------------------------------------------------
@@ -72,11 +71,16 @@ def test_cli_writes_csv(tmp_path: Path) -> None:
     result = runner.invoke(
         app,
         [
-            "--start", "2022-01-01",
-            "--end", "2022-01-07",
-            "--num-skus", "2",
-            "--seed", "0",
-            "--output", str(output),
+            "--start",
+            "2022-01-01",
+            "--end",
+            "2022-01-07",
+            "--num-skus",
+            "2",
+            "--seed",
+            "0",
+            "--output",
+            str(output),
         ],
     )
     assert result.exit_code == 0, result.output

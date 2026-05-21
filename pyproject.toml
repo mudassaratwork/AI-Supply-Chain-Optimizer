@@ -41,6 +41,11 @@ ignore = [
 "tests/**" = ["B011"]  # asserts are fine in tests
 "__init__.py" = ["F401"]  # re-exports are fine in package roots
 
+[tool.ruff.lint.isort]
+# Tell isort which top-level modules are this repo's own packages so they get
+# grouped after third-party imports, not mixed in alphabetically with them.
+known-first-party = ["etl"]
+
 [tool.ruff.format]
 quote-style = "double"
 indent-style = "space"
@@ -72,9 +77,12 @@ exclude = [
 ]
 
 # Third-party libs without first-class type stubs. Suppressing here is cleaner
-# than scattering `# type: ignore` across the codebase.
+# than scattering `# type: ignore` across the codebase. pandas-stubs exists but
+# pulling it into requirements widens this PR — revisit when the data layer
+# stabilises and type precision matters more.
 [[tool.mypy.overrides]]
 module = [
+    "pandas.*",
     "prophet.*",
     "statsmodels.*",
     "xgboost.*",

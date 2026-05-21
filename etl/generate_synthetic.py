@@ -138,9 +138,7 @@ def main(
 ) -> None:
     """Generate the synthetic sales CSV and write it to ``--output``."""
     end_date = date.fromisoformat(end) if end else date.today()
-    start_date = (
-        date.fromisoformat(start) if start else end_date - timedelta(days=365 * years)
-    )
+    start_date = date.fromisoformat(start) if start else end_date - timedelta(days=365 * years)
 
     df = generate_sales(start=start_date, end=end_date, num_skus=num_skus, seed=seed)
     output.parent.mkdir(parents=True, exist_ok=True)
